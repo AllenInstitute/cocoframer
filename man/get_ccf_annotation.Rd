@@ -15,5 +15,8 @@ a 3-dimensional array with 25 micron resolution. Dimension are:
 }
 }
 \description{
+This annotation is at 25 um resolution, and is used for brain atlas annotations.
+}
+\details{
 No parameters
 }
