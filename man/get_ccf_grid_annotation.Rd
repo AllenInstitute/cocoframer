@@ -9,9 +9,9 @@ get_ccf_grid_annotation()
 \value{
 a 3-dimensional array with 200 micron resolution. Dimension are:
 \itemize{
-  \item x, 528: anterior/posterior
-  \item y, 320: superior/inferior
-  \item z, 456: left/right
+  \item x, 67: anterior/posterior
+  \item y, 41: superior/inferior
+  \item z, 58: left/right
 }
 }
 \description{

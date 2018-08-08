@@ -2,7 +2,7 @@
 % Please edit documentation in R/aba_ish.R
 \name{get_aba_ish_data}
 \alias{get_aba_ish_data}
-\title{Retrieve gridded ABA RNA ISH results for a specific API id}
+\title{Retrieve gridded ABA RNA ISH results for a specific SectionDataSet}
 \usage{
 get_aba_ish_data(api_id, values = "energy")
 }
@@ -20,5 +20,5 @@ a 3d array with values for each position in the ABA mouse gridAnnotation space a
 }
 }
 \description{
-Retrieve gridded ABA RNA ISH results for a specific API id
+Retrieve gridded ABA RNA ISH results for a specific SectionDataSet
 }
