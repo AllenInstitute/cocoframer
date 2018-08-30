@@ -27,6 +27,26 @@ all_data <- map(all_ids, get_aba_ish_data)
 
 # Build heatmap plot with functions
 
+# ish_slice_heatmap() gives you simple heatmaps for any single ISH dataset:
+ish_slice_heatmap(all_data[[1]],
+                  anno = oa,
+                  direction = "coronal",
+                  colorset = c("black","white"),
+                  slice = 42)
+
+ish_slice_heatmap(all_data[[2]],
+                  anno = oa,
+                  direction = "coronal",
+                  colorset = c("black","white"),
+                  slice = 42)
+
+ish_slice_heatmap(all_data[[3]],
+                  anno = oa,
+                  direction = "coronal",
+                  colorset = c("black","white"),
+                  slice = 42)
+
+# ish_slice_heatmap_funs() lets you apply functions to combine multiple ISH datasets
 # funs = c("+","+","+") will add all of the values for each gene.
 ish_slice_heatmap_funs(all_data,
                      anno = oa,
@@ -51,7 +71,31 @@ ish_slice_heatmap_funs(all_data[2:3],
 
 
 # You can also make (up to) 3-color overlay heatmaps:
+ish_slice_heatmap_3color(all_data[1:2],
+                         anno = oa,
+                         direction = "coronal",
+                         slice_num = 42)
+
+ish_slice_heatmap_3color(all_data[1:2],
+                         anno = oa,
+                         colors = c("green","blue"),
+                         direction = "coronal",
+                         slice_num = 42)
+
 ish_slice_heatmap_3color(all_data,
                          anno = oa,
                          direction = "coronal",
                          slice_num = 42)
+
+# You can also do any of these in horizontal or saggital slices:
+ish_slice_heatmap_3color(all_data[1:2],
+                         anno = oa,
+                         direction = "horizontal",
+                         slice_num = 15)
+
+ish_slice_heatmap_funs(all_data,
+                       anno = oa,
+                       direction = "saggital",
+                       slice_num = 20,
+                       funs = c("+","+","+"))
+

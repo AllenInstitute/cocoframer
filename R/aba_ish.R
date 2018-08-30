@@ -176,11 +176,14 @@ slice_ccf_mat <- function(mat,
 }
 
 ish_slice_heatmap <- function(mat,
+                              anno = NULL,
                               slice_num,
                               direction = "coronal",
-                              normalize = "slice") {
+                              normalize = "slice",
+                              colorset = c("darkblue","gray90","red")) {
 
-  library(ggplot2)
+  library(rbokeh)
+  library(dplyr)
   library(reshape2)
   library(scrattch.vis)
 
@@ -195,18 +198,57 @@ ish_slice_heatmap <- function(mat,
   slice_flat <- melt(slice_mat)
   names(slice_flat) <- c("y","x","value")
 
-  slice_flat <- slice_flat[slice_flat$value > 0,]
+  slice_flat$value[slice_flat$value < 0] <- 0
   slice_flat$color <- values_to_colors(slice_flat$value,
+                                       colorset = colorset,
                                        min_val = 0,
                                        max_val = max_val)
 
-  ggplot() +
-    geom_tile(data = slice_flat,
-              aes(x = x,
-                  y = -y,
-                  fill = color)) +
-    scale_fill_identity() +
-    theme_void()
+  if(is.null(anno)) {
+    hover_list <- list("Value" = "value")
+  } else {
+    anno_flat <- melt(slice_ccf_mat(anno, slice_num, direction))
+    names(anno_flat) <- c("y","x","annotation")
+    slice_flat <- left_join(slice_flat, anno_flat, by = c("x","y"))
+    hover_list <- list("Value" = "value",
+                       "Annotation" = "annotation")
+  }
+
+  if(direction == "coronal") {
+    f <- figure(width = dim(slice_mat_list[[1]])[2]*10,
+                height = dim(slice_mat_list[[1]])[1]*10) %>%
+      ly_crect(data = slice_flat,
+               x = x,
+               y = -y,
+               fill_color = color,
+               line_color = NA,
+               fill_alpha = 1,
+               hover = hover_list)
+  } else if(direction == "horizontal") {
+    f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
+                height = dim(slice_mat_list[[1]])[2]*10) %>%
+      ly_crect(data = slice_flat,
+               x = y,
+               y = x,
+               fill_color = color,
+               line_color = NA,
+               fill_alpha = 1,
+               hover = hover_list)
+  } else if(direction == "saggital") {
+    f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
+                height = dim(slice_mat_list[[1]])[2]*10) %>%
+      ly_crect(data = slice_flat,
+               x = y,
+               y = -x,
+               fill_color = color,
+               line_color = NA,
+               fill_alpha = 1,
+               hover = hover_list)
+  }
+
+  return(f)
+
+
 }
 
 
@@ -303,16 +345,40 @@ ish_slice_heatmap_3color <- function(mat_list,
                        "Annotation" = "annotation")
   }
 
+  if(direction == "coronal") {
+    f <- figure(width = dim(slice_mat_list[[1]])[2]*10,
+                height = dim(slice_mat_list[[1]])[1]*10) %>%
+      ly_crect(data = slice_flat,
+                  x = x,
+                  y = -y,
+                  fill_color = color,
+                  line_color = NA,
+                  fill_alpha = 1,
+                  hover = hover_list)
+  } else if(direction == "horizontal") {
+    f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
+                height = dim(slice_mat_list[[1]])[2]*10) %>%
+      ly_crect(data = slice_flat,
+               x = y,
+               y = x,
+               fill_color = color,
+               line_color = NA,
+               fill_alpha = 1,
+               hover = hover_list)
+  } else if(direction == "saggital") {
+    f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
+                height = dim(slice_mat_list[[1]])[2]*10) %>%
+      ly_crect(data = slice_flat,
+               x = y,
+               y = -x,
+               fill_color = color,
+               line_color = NA,
+               fill_alpha = 1,
+               hover = hover_list)
+  }
 
-  figure(width = dim(slice_mat)[2]*10,
-         height = dim(slice_mat)[1]*10) %>%
-    ly_crect(data = slice_flat,
-             x = x,
-             y = -y,
-             fill_color = color,
-             line_color = NA,
-             fill_alpha = 1,
-             hover = hover_list)
+  return(f)
+
 }
 
 ish_slice_heatmap_funs <- function(mat_list,
@@ -376,14 +442,38 @@ ish_slice_heatmap_funs <- function(mat_list,
                        "Annotation" = "annotation")
   }
 
-  figure(width = dim(slice_mat)[2]*10,
-         height = dim(slice_mat)[1]*10) %>%
-    ly_crect(data = slice_flat,
-             x = x,
-             y = -y,
-             fill_color = color,
-             line_color = NA,
-             fill_alpha = 1,
-             hover = hover_list)
+  if(direction == "coronal") {
+    f <- figure(width = dim(slice_mat_list[[1]])[2]*10,
+                height = dim(slice_mat_list[[1]])[1]*10) %>%
+      ly_crect(data = slice_flat,
+               x = x,
+               y = -y,
+               fill_color = color,
+               line_color = NA,
+               fill_alpha = 1,
+               hover = hover_list)
+  } else if(direction == "horizontal") {
+    f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
+                height = dim(slice_mat_list[[1]])[2]*10) %>%
+      ly_crect(data = slice_flat,
+               x = y,
+               y = x,
+               fill_color = color,
+               line_color = NA,
+               fill_alpha = 1,
+               hover = hover_list)
+  } else if(direction == "saggital") {
+    f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
+                height = dim(slice_mat_list[[1]])[2]*10) %>%
+      ly_crect(data = slice_flat,
+               x = y,
+               y = -x,
+               fill_color = color,
+               line_color = NA,
+               fill_alpha = 1,
+               hover = hover_list)
+  }
+
+  return(f)
 }
 mouse_organism_id <- 2
