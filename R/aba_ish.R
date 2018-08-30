@@ -159,5 +159,231 @@ get_exp_gene_relationships <- function() {
 }
 
 
+slice_ccf_mat <- function(mat,
+                         slice_num,
+                         direction = "coronal") {
 
+
+  if(direction == "coronal") {
+    return(mat[slice_num, , ])
+  }
+  if(direction == "horizontal") {
+    return(mat[, slice_num, ])
+  }
+  if(direction == "saggital") {
+    return(mat[, , slice_num])
+  }
+}
+
+ish_slice_heatmap <- function(mat,
+                              slice_num,
+                              direction = "coronal",
+                              normalize = "slice") {
+
+  library(ggplot2)
+  library(reshape2)
+  library(scrattch.vis)
+
+  slice_mat <- slice_ccf_mat(mat, slice_num, direction)
+
+  if(normalize == "slice") {
+    max_val <- max(slice_mat)
+  } else if(normalize == "all") {
+    max_val <- max(mat)
+  }
+
+  slice_flat <- melt(slice_mat)
+  names(slice_flat) <- c("y","x","value")
+
+  slice_flat <- slice_flat[slice_flat$value > 0,]
+  slice_flat$color <- values_to_colors(slice_flat$value,
+                                       min_val = 0,
+                                       max_val = max_val)
+
+  ggplot() +
+    geom_tile(data = slice_flat,
+              aes(x = x,
+                  y = -y,
+                  fill = color)) +
+    scale_fill_identity() +
+    theme_void()
+}
+
+
+ish_slice_heatmap_3color <- function(mat_list,
+                                     anno = NULL,
+                               slice_num,
+                               colors = c("#FF0000","#00FF00","#0000FF"),
+                               direction = "coronal",
+                               normalize = "slice",
+                               scale = "linear") {
+
+  library(rbokeh)
+  library(reshape2)
+  library(purrr)
+  library(dplyr)
+  library(scrattch.vis)
+
+  slice_mat_list <- map(mat_list, slice_ccf_mat, slice_num, direction)
+
+  slice_mat_list <- map(slice_mat_list,
+                        function(x) {
+                          x[x < 0] <- 0
+                          x
+                        })
+
+  if(scale == "log10") {
+    slice_mat_list <- map(slice_mat_list, function(x) { log10(x + 1) })
+  }
+
+  if(normalize == "slice") {
+    max_vals <- map_dbl(slice_mat_list, max)
+  } else if(normalize == "all") {
+    max_vals <- map_dbl(mat_list, max)
+  }
+
+  slice_flat_list <- map(slice_mat_list,
+                         function(slice_mat) {
+                           slice_flat <- melt(slice_mat)
+                           names(slice_flat) <- c("y","x","value")
+                           slice_flat
+                         })
+
+  if(length(slice_flat_list) > 0) {
+    slice_flat_list[[1]]$color1 <- values_to_colors(slice_flat_list[[1]]$value,
+                                                   min_val = 0,
+                                                   max_val = max_vals[1],
+                                                   colorset = c("#000000", colors[1]))
+
+    slice_flat <- slice_flat_list[[1]][,c("x","y","color1")]
+
+    slice_flat$color <- slice_flat$color1
+  }
+
+  if(length(slice_flat_list) > 1) {
+    slice_flat_list[[2]]$color2 <- values_to_colors(slice_flat_list[[2]]$value,
+                                                   min_val = 0,
+                                                   max_val = max_vals[2],
+                                                   colorset = c("#000000", colors[2]))
+
+    slice_flat <- full_join(slice_flat,
+                            slice_flat_list[[2]][,c("x","y","color2")],
+                            by = c("x","y"))
+
+    slice_flat$color[is.na(slice_flat$color1)] <- "#000000"
+    slice_flat$color2[is.na(slice_flat$color2)] <- "#000000"
+
+    slice_flat$color <- map2_chr(slice_flat$color, slice_flat$color2, color_sum)
+  }
+
+  if(length(slice_flat_list) > 2) {
+    slice_flat_list[[3]]$color3 <- values_to_colors(slice_flat_list[[3]]$value,
+                                                   min_val = 0,
+                                                   max_val = max_vals[3],
+                                                   colorset = c("#000000", colors[3]))
+
+    slice_flat <- full_join(slice_flat,
+                            slice_flat_list[[3]][,c("x","y","color3")],
+                            by = c("x","y"))
+
+    slice_flat$color[is.na(slice_flat$color1)] <- "#000000"
+    slice_flat$color3[is.na(slice_flat$color3)] <- "#000000"
+    slice_flat$color <- map2_chr(slice_flat$color, slice_flat$color3, color_sum)
+
+  }
+
+
+  if(is.null(anno)) {
+    hover_list <- list("Value" = "color")
+  } else {
+    anno_flat <- melt(slice_ccf_mat(anno, slice_num, direction))
+    names(anno_flat) <- c("y","x","annotation")
+    slice_flat <- left_join(slice_flat, anno_flat, by = c("x","y"))
+    hover_list <- list("Value" = "color",
+                       "Annotation" = "annotation")
+  }
+
+
+  figure(width = dim(slice_mat)[2]*10,
+         height = dim(slice_mat)[1]*10) %>%
+    ly_crect(data = slice_flat,
+             x = x,
+             y = -y,
+             fill_color = color,
+             line_color = NA,
+             fill_alpha = 1,
+             hover = hover_list)
+}
+
+ish_slice_heatmap_funs <- function(mat_list,
+                                   anno = NULL,
+                                   slice_num,
+                                   funs,
+                                   colorset = c("#000000","#FFFFFF"),
+                                   direction = "coronal",
+                                   normalize = "slice",
+                                   scale = "linear") {
+
+  library(rbokeh)
+  library(reshape2)
+  library(purrr)
+  library(dplyr)
+  library(scrattch.vis)
+
+  slice_mat_list <- map(mat_list, slice_ccf_mat, slice_num, direction)
+
+  slice_mat_list <- map(slice_mat_list,
+                        function(x) {
+                          x[x < 0] <- 0
+                          x
+                        })
+
+  if(scale == "log10") {
+    slice_mat_list <- map(slice_mat_list, function(x) { log10(x + 1) })
+  }
+
+  if(normalize == "slice") {
+    max_vals <- map_dbl(slice_mat_list, max)
+  } else if(normalize == "all") {
+    max_vals <- map_dbl(mat_list, max)
+  }
+
+  slice_mat_list <- map2(slice_mat_list,
+                         max_vals,
+                         function(x, y) { x / y })
+
+  slice_mat <- slice_mat_list[[1]]
+  slice_mat[slice_mat > 0] <- 0
+
+  for(i in 1:length(slice_mat_list)) {
+    slice_mat <- eval(call(funs[i], slice_mat, slice_mat_list[[i]]))
+  }
+
+  slice_flat <- melt(slice_mat)
+  names(slice_flat) <- c("y","x","value")
+  slice_flat$color <- values_to_colors(slice_flat$value,
+                                       colorset = colorset)
+
+  slice_flat$value <- round(slice_flat$value, 3)
+
+  if(is.null(anno)) {
+    hover_list <- list("Value" = "value")
+  } else {
+    anno_flat <- melt(slice_ccf_mat(anno, slice_num, direction))
+    names(anno_flat) <- c("y","x","annotation")
+    slice_flat <- left_join(slice_flat, anno_flat, by = c("x","y"))
+    hover_list <- list("Value" = "value",
+                       "Annotation" = "annotation")
+  }
+
+  figure(width = dim(slice_mat)[2]*10,
+         height = dim(slice_mat)[1]*10) %>%
+    ly_crect(data = slice_flat,
+             x = x,
+             y = -y,
+             fill_color = color,
+             line_color = NA,
+             fill_alpha = 1,
+             hover = hover_list)
+}
 mouse_organism_id <- 2
