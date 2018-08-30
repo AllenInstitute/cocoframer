@@ -215,8 +215,8 @@ ish_slice_heatmap <- function(mat,
   }
 
   if(direction == "coronal") {
-    f <- figure(width = dim(slice_mat_list[[1]])[2]*10,
-                height = dim(slice_mat_list[[1]])[1]*10) %>%
+    f <- figure(width = dim(slice_mat)[2]*10,
+                height = dim(slice_mat)[1]*10) %>%
       ly_crect(data = slice_flat,
                x = x,
                y = -y,
@@ -225,8 +225,8 @@ ish_slice_heatmap <- function(mat,
                fill_alpha = 1,
                hover = hover_list)
   } else if(direction == "horizontal") {
-    f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
-                height = dim(slice_mat_list[[1]])[2]*10) %>%
+    f <- figure(width = dim(slice_mat)[1]*10,
+                height = dim(slice_mat)[2]*10) %>%
       ly_crect(data = slice_flat,
                x = y,
                y = x,
@@ -235,8 +235,8 @@ ish_slice_heatmap <- function(mat,
                fill_alpha = 1,
                hover = hover_list)
   } else if(direction == "saggital") {
-    f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
-                height = dim(slice_mat_list[[1]])[2]*10) %>%
+    f <- figure(width = dim(slice_mat)[1]*10,
+                height = dim(slice_mat)[2]*10) %>%
       ly_crect(data = slice_flat,
                x = y,
                y = -x,
