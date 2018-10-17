@@ -1,12 +1,14 @@
 # Package dependencies:
-# Sys.setenv(GITHUB_PAT = "9b82cd611afd98554b9753cb1e5df8e40e5012e2")
-# devtools::install_github("AllenInstitute/cocoframer")
+Sys.setenv(GITHUB_PAT = "9b82cd611afd98554b9753cb1e5df8e40e5012e2")
+devtools::install_github("AllenInstitute/cocoframer")
 # devtools::install_github("AllenInstitute/scrattch.vis")
 # install.packages(c("reshape2","dplyr","purrr","rbokeh","viridisLite"))
 
 library(cocoframer)
 library(purrr)
 library(viridisLite) # optional - nice color palettes
+library(dplyr)
+library(reshape2)
 
 # Get structure ontology annotations
 ga <- get_ccf_grid_annotation()
@@ -22,8 +24,14 @@ Slc17a7_ids <- get_gene_aba_ish_ids("Slc17a7")
 Pvalb_ids <- get_gene_aba_ish_ids("Pvalb")
 Sst_ids <- get_gene_aba_ish_ids("Sst")
 
+Cux2_ids <- get_gene_aba_ish_ids("Cux2")
+Scnn1a_ids <- get_gene_aba_ish_ids("Scnn1a")
+Foxp2_ids <- get_gene_aba_ish_ids("Foxp2")
+
 # For now, we'll just take one of each - you could use more than 3 with ish_slice_heatmap_funs, below.
 all_ids <- c(Slc17a7_ids[1], Pvalb_ids[1], Sst_ids[1])
+
+all_ids <- c(Cux2_ids[1], Scnn1a_ids[1], Foxp2_ids[1])
 
 all_data <- map(all_ids, get_aba_ish_data)
 
@@ -88,7 +96,13 @@ ish_slice_heatmap_3color(all_data[1:2],
 ish_slice_heatmap_3color(all_data,
                          anno = oa,
                          direction = "coronal",
-                         slice_num = 42)
+                         slice_num = 25)
+
+ish_slice_heatmap_3color(all_data,
+                         anno = oa,
+                         direction = "saggital",
+                         slice_num = 20)
+
 
 # You can also do any of these in horizontal or saggital slices:
 ish_slice_heatmap_3color(all_data[1:2],
