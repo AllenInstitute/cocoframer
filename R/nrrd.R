@@ -17,7 +17,7 @@ read_aibs_nrrd <- function (file,
   con <- file(file, "rb")
 
   # skip header lines
-  h <- readLines(con, n = neader_lines)
+  h <- readLines(con, n = header_lines)
 
   # data is gzipped
   fc <- gzcon(con)

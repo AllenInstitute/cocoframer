@@ -8,5 +8,5 @@ Description: Functions for working with the Allen Institute Common Coordinate Fr
 License: Allen Institute Software License
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Imports: jsonlite, purrr, reshape2, rgl
