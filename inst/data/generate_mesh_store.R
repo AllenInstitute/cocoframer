@@ -1,26 +1,27 @@
-save_rgl_mesh_zip <- function(mesh,
-                          mesh_name,
-                          zip_file) {
+library(cocoframer)
+library(xml2)
+library(purrr)
 
-  vb_vector <- as.vector(mesh$vb[1:3,])
-  it_vector <- as.vector(mesh$it)
+obj_dir <- "http://download.alleninstitute.org/informatics-archive/current-release/mouse_ccf/annotation/ccf_2017/structure_meshes/"
 
-  out_vb_file <- paste0("vb_",mesh_name, ".num")
-  out_it_file <- paste0("it_",mesh_name, ".int")
+obj_page <- read_html(obj_dir)
 
-  temp_loc <- tempdir()
+obj_links <- xml_find_all(obj_page, ".//a")
+obj_files <- unlist(xml_attrs(obj_links, "href"))
 
-  writeBin(vb_vector, file.path(temp_loc, out_vb_file))
-  writeBin(it_vector, file.path(temp_loc, out_it_file))
+obj_files <- obj_files[grepl(".obj$", obj_files)]
 
-  zip(zip_file, c(file.path(temp_loc, out_vb_file),
-                  file.path(temp_loc, out_it_file)))
+walk(obj_files,
+     function(x) {
+       download.file(file.path(obj_dir, x), x)
+     })
 
-  file.remove(file.path(temp_loc, out_vb_file))
-  file.remove(file.path(temp_loc, out_it_file))
-  file.remove(temp_loc)
+obj_names <- sub(".obj","",obj_files)
 
-}
+walk(1:length(obj_files),
+     function(x) {
+       mesh <- obj_to_mesh(obj_files[x],
+                           yrange = c(0, 8000))
 
-mesh_source <- "http://download.alleninstitute.org/informatics-archive/current-release/mouse_ccf/annotation/ccf_2017/structure_meshes/"
-
+       save_rgl_mesh_zip(mesh, obj_names[x], "ccf_2017_meshes.zip")
+     })
