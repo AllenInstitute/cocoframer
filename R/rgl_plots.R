@@ -22,14 +22,13 @@ plot_ccf_structure_points <- function(ccf_arr,
 
 }
 
-
-plot_structure <- function(mesh_list,
-                           main_structure,
-                           main_color = "#74CAFF",
-                           main_alpha = 1,
-                           background_structure = NULL,
-                           background_color = "#808080",
-                           background_alpha = 0.2) {
+plot_brain_explorer_structures <- function(mesh_list,
+                                           main_structure,
+                                           main_color = "#74CAFF",
+                                           main_alpha = 1,
+                                           background_structure = NULL,
+                                           background_color = "#808080",
+                                           background_alpha = 0.2) {
   if(is.null(background_structure)) {
     meshes <- mesh_list[main_structure]
   } else {
