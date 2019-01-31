@@ -5,14 +5,13 @@
 #' @return a nested list object containing the Mouse Brain Atlas ontology
 #'
 get_mba_ontology <- function() {
-  library(jsonlite)
 
   # Download the ontology JSON file
   temp <- tempfile()
   download.file("http://api.brain-map.org/api/v2/structure_graph_download/1.json", temp)
 
   # Read the JSON
-  raw_ontology <- fromJSON(temp)[["msg"]]
+  raw_ontology <- jsonlite::fromJSON(temp)[["msg"]]
 
   return(raw_ontology)
 }
@@ -25,7 +24,6 @@ get_mba_ontology <- function() {
 #' @return a data.frame with all descriptive columns for the ontology.
 #'
 flatten_mba_ontology <- function(ontology, ontology_df = NULL) {
-  library(purrr)
 
   l <- ontology
 
@@ -38,14 +36,14 @@ flatten_mba_ontology <- function(ontology, ontology_df = NULL) {
 
     child_df <- data.frame(l[names(l) != "children"])
 
-    n_children_of_children <- map_dbl(l$children,
-                                      function(x) {
-                                        if("children" %in% names(x)) {
-                                          length(x$children)
-                                        } else {
-                                          0
-                                        }
-                                      })
+    n_children_of_children <- purrr::map_dbl(l$children,
+                                             function(x) {
+                                               if("children" %in% names(x)) {
+                                                 length(x$children)
+                                               } else {
+                                                 0
+                                               }
+                                             })
 
     child_df$n_children <- n_children_of_children
 

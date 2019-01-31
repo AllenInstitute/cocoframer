@@ -21,3 +21,32 @@ plot_ccf_structure_points <- function(ccf_arr,
   points3d(str_melt$Var1,str_melt$Var2,str_melt$Var3)
 
 }
+
+
+plot_structure <- function(mesh_list,
+                           main_structure,
+                           main_color = "#74CAFF",
+                           main_alpha = 1,
+                           background_structure = NULL,
+                           background_color = "#808080",
+                           background_alpha = 0.2) {
+  if(is.null(background_structure)) {
+    meshes <- mesh_list[main_structure]
+  } else {
+    meshes <- mesh_list[c(main_structure,
+                          background_structure)]
+
+    meshes[[background_structure]]$material <- list(color = background_color,
+                                                    alpha = background_alpha)
+  }
+
+  meshes[[main_structure]]$material <- list(color = main_color,
+                                            alpha = main_alpha)
+
+  rgl::view3d(theta = -45, phi = 35, zoom = 0.7)
+
+  rgl::shapelist3d(meshes,
+                   box = FALSE,
+                   axes = FALSE,
+                   xlab = "", ylab = "", zlab = "")
+}
