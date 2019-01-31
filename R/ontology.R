@@ -113,3 +113,163 @@ filter_mba_ontology_children <- function(flat_ontology,
   return(children_ontology)
 }
 
+generate_taxons <- function(flat_ontology,
+                            id_column = "id",
+                            parent_column = "parent_structure_id",
+                            value_column = "id",
+                            taxon_column = "taxons") {
+
+  library(dplyr)
+
+  flat_ontology <- flat_ontology %>%
+    arrange(st_level)
+
+  taxon_list <- list(flat_ontology[[value_column]][1])
+  names(taxon_list)[1] <- flat_ontology[[id_column]][1]
+
+  for(i in 2:nrow(flat_ontology)) {
+    id <- as.character(flat_ontology[[id_column]][i])
+    value <- as.character(flat_ontology[[value_column]][i])
+    parent_id <- as.character(flat_ontology[[parent_column]][i])
+
+    taxon_list[[id]] <- paste0(taxon_list[[parent_id]], ";", value)
+  }
+
+  flat_ontology[[taxon_column]] <- unlist(taxon_list)
+
+  flat_ontology
+
+}
+
+cleanup_taxons <- function(df,
+                           id_column = "id",
+                           taxon_column = "taxons") {
+  library(purrr)
+
+  available_ids <- paste0(as.character(unique(df[[id_column]])))
+
+  split_taxons <- strsplit(df[[taxon_column]], ";")
+
+  new_taxons <- map(split_taxons,
+                    function(x) {
+                      x <- x[x %in% available_ids]
+                      paste(x, collapse = ";", sep = "")
+                    })
+
+  df[[taxon_column]] <- new_taxons
+
+  df
+}
+
+last_column_shift <- function(df,
+                              col = "taxons") {
+
+  others <- names(df)[names(df) != col]
+  df[, c(others, col)]
+
+}
+
+#' Compute values hierarchicaly over a flat ontology
+#'
+#' Values accumulate from the bottom of the ontology to the top at each node,
+#' and are computed only from the values of the direct children of each node.
+#'
+#' @param df A flat ontology data.frame with a taxons column
+#' @param fun The function to run as a character object, e.g. "mean".
+#' @param compute_column The column of values to use for the function computation.
+#' @param result_column The name of the output column.
+#' @param include_node Logical, should values assigned to non-leaf nodes be included in calculation?
+#' @param na.rm If TRUE or FALSE, passed as a parameter to fun. If NULL (default), is ignored.
+#' @param taxon_column The name of the taxons column. Default is "taxons"
+#'
+#' @return A flat ontology data.frame with the result_column added. The taxon column will be moved
+#' to the last column position. This should behave similarly to mutate().
+#'
+#' @example
+#'
+#' flat_ontology2 <- flat_ontology %>%
+#'   compute_hierarchical("mean","n_children","mean_children",
+#'                        include_node = TRUE)
+#'
+compute_hierarchical <- function(df,
+                                 fun,
+                                 compute_column,
+                                 result_column,
+                                 include_node = FALSE,
+                                 na.rm = NULL,
+                                 taxon_column = "taxons") {
+
+  library(stringr)
+  library(dplyr)
+
+  df[[result_column]] <- 0
+
+  # Get the depth by counting the semicolons in taxons
+  df$depth <- str_count(df[[taxon_column]], ";")
+  # Sort by deepest first
+  df <- df %>%
+    mutate(original_order = 1:n()) %>%
+    arrange(desc(depth))
+
+  for(i in 1:nrow(df)) {
+
+    if(df$n_children[i] == 0) {
+      # Otherwise, use the row for the leaf
+      df[[result_column]][i] <- df[[compute_column]][i]
+    } else {
+      # If this node has children, find them using the parent_structure_id column
+      children <- which(df$parent_structure_id == df$id[i])
+
+      # Get the values for the specified compute_column for the children
+      children_values <- df[[result_column]][children]
+
+      if(include_node) {
+        children_values <- c(df[[compute_column]][i], children_values)
+      }
+
+      # Run the function on the children_values
+      if(is.null(na.rm)) {
+        df[[result_column]][i] <- do.call(fun, list(children_values))
+      } else {
+        df[[result_column]][i] <- do.call(fun, list(children_values, na.rm = na.rm))
+      }
+    }
+
+  }
+
+  # rearrange results to match original order
+  df <- df %>%
+    arrange(original_order) %>%
+    select(-original_order, -depth)
+
+  # rearrange columns so that taxons is last (required for parse_tax_data)
+  df <- last_column_shift(df, taxon_column)
+
+  df
+}
+
+compute_children <- function(df,
+                             taxon_column,
+                             compute_column,
+                             fun,
+                             na.rm = NULL) {
+
+  res <- numeric(length = nrow(df))
+
+  for(i in 1:nrow(df)) {
+    parent_taxon <- df[[taxon_column]][i]
+    children <- which(grepl(paste0("^",parent_taxon),df[[taxon_column]]))
+    if(length(children) > 1) {
+      children <- setdiff(children, i)
+    }
+    children_values <- df[[compute_column]][children]
+    if(is.null(na.rm)) {
+      res[i] <- do.call(fun, list(children_values))
+    } else {
+      res[i] <- do.call(fun, list(children_values, na.rm = na.rm))
+    }
+  }
+
+  res
+}
+
