@@ -1,13 +1,15 @@
 #' Find ABA RNA ISH experiment IDs for a specific gene symbol
 #'
 #' @param gene_symbol The gene symbol to search for
+#' @param plane The plane of the ISH experiments to query. Must be either "coronal" or "saggital".
 #'
 #' @return a character object with all of the gene symbols matching your query
-#'
-get_gene_aba_ish_ids <- function(gene_symbol) {
+#' @export
+get_gene_aba_ish_ids <- function(gene_symbol,
+                                 plane = "coronal") {
   library(xml2)
 
-  api_query <- paste0("http://api.brain-map.org/api/v2/data/query.xml?criteria=model::SectionDataSet,rma::criteria,[failed$eq'false'],products[abbreviation$eq'Mouse'],plane_of_section[name$eq'coronal'],genes[acronym$eq'",gene_symbol,"']")
+  api_query <- paste0("http://api.brain-map.org/api/v2/data/query.xml?criteria=model::SectionDataSet,rma::criteria,[failed$eq'false'],products[abbreviation$eq'Mouse'],plane_of_section[name$eq'",plane,"'],genes[acronym$eq'",gene_symbol,"']")
 
   api_xml <- read_xml(api_query)
 
@@ -100,7 +102,7 @@ get_aba_ish_structure_data <- function(api_id,
 
 #' Query the ABA API to get relationships between ISH experiments and genes
 #'
-#' No parameters
+#' @param plane The plane of the ISH experiments to query. Must be either "coronal" or "saggital".
 #'
 #' @return a data.frame with two columns: id and gene_symbol
 #'

@@ -4,10 +4,12 @@
 \alias{get_gene_aba_ish_ids}
 \title{Find ABA RNA ISH experiment IDs for a specific gene symbol}
 \usage{
-get_gene_aba_ish_ids(gene_symbol)
+get_gene_aba_ish_ids(gene_symbol, plane = "coronal")
 }
 \arguments{
 \item{gene_symbol}{The gene symbol to search for}
+
+\item{plane}{The plane of the ISH experiments to query. Must be either "coronal" or "saggital".}
 }
 \value{
 a character object with all of the gene symbols matching your query

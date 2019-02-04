@@ -4,11 +4,14 @@
 \alias{get_exp_gene_relationships}
 \title{Query the ABA API to get relationships between ISH experiments and genes}
 \usage{
-get_exp_gene_relationships()
+get_exp_gene_relationships(plane = "coronal")
+}
+\arguments{
+\item{plane}{The plane of the ISH experiments to query. Must be either "coronal" or "saggital".}
 }
 \value{
 a data.frame with two columns: id and gene_symbol
 }
 \description{
-No parameters
+Query the ABA API to get relationships between ISH experiments and genes
 }
