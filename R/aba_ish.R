@@ -104,11 +104,11 @@ get_aba_ish_structure_data <- function(api_id,
 #'
 #' @return a data.frame with two columns: id and gene_symbol
 #'
-get_exp_gene_relationships <- function() {
+get_exp_gene_relationships <- function(plane = "coronal") {
   library(xml2)
   library(purrr)
 
-  api_query <- "http://api.brain-map.org/api/v2/data/query.xml?criteria=model::SectionDataSet,rma::criteria,[failed$eq'false'],products[abbreviation$eq'Mouse'],plane_of_section[name$eq'coronal']&include=genes"
+  api_query <- paste0("http://api.brain-map.org/api/v2/data/query.xml?criteria=model::SectionDataSet,rma::criteria,[failed$eq'false'],products[abbreviation$eq'Mouse'],plane_of_section[name$eq'",plane,"']&include=genes")
 
   api_xml <- read_xml(api_query)
 
@@ -131,7 +131,6 @@ get_exp_gene_relationships <- function() {
   n_batches <- floor(total_rows/50)
 
   for(i in 2:n_batches) {
-    print(i)
     start_row <- (i - 1) * 50
     if(i == n_batches) {
       num_rows <- total_rows - start_row
