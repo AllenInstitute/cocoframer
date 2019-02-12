@@ -12,7 +12,7 @@
 #' }
 get_ccf_annotation <- function() {
   # CCF Annotation Dimensions
-  vol_dims <- c(528, 320, 456)
+  vol_dims <- aibs_dims("25um")
   # Download and read the CCF Annotation coordinates
   temp <- tempfile()
   download.file("http://download.alleninstitute.org/informatics-archive/current-release/mouse_annotation/P56_Mouse_annotation.zip", temp)
@@ -40,7 +40,7 @@ get_ccf_annotation <- function() {
 #' }
 get_ccf_grid_annotation <- function() {
   # CCF Annotation Dimensions
-  vol_dims <- c(67, 41, 58)
+  vol_dims <- aibs_dims("200um")
   # Download and read the CCF Annotation coordinates
   temp <- tempfile()
   download.file("http://download.alleninstitute.org/informatics-archive/current-release/mouse_annotation/P56_Mouse_gridAnnotation.zip", temp)

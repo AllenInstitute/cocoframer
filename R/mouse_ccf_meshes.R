@@ -3,7 +3,7 @@
 #' @param obj A character object with the location of a .obj file.
 #' @param material The rgl material to use for the mesh. Default is "gray". For details, see ?rgl.material.
 #' @param invert_y Logical. Whether to flip the object in the y-dimensions. This is useful for AIBS mesh objects. Default is TRUE.
-#' @param yrange Length 2 numeric vector indicating the range to use for inversion. Default is c(0,1).
+#' @param yrange Length 2 numeric vector indicating the range to use for inversion. Default is c(0,8000).
 #'
 #' @return a list object with class mesh3d and shape3d.
 #' @export
@@ -11,7 +11,7 @@
 obj_to_mesh <- function(obj,
                         material = "gray",
                         invert_y = TRUE,
-                        yrange = c(0,1)) {
+                        yrange = c(0,8000)) {
 
   obj_lines <- readLines(obj)
 
@@ -97,6 +97,9 @@ save_rgl_mesh_zip <- function(mesh,
 #' This reverses the proccessing in save_rgl_mesh_zip() to rebuild the mesh object
 #' from binary vectors.
 #'
+#' If you're looking for a simple way to get a brain structure, use ccf_2017_mesh, which wraps this
+#' function, and retrieves a mesh that's included in this package.
+#'
 #' @param mesh_name A character object specifying the mesh name, which will be used for file names.
 #' @param zip_file The zip file containing vectorized meshes.
 #' @param material The rgl material to use for the mesh. Default is "gray". For details, see ?rgl.material.
@@ -104,6 +107,11 @@ save_rgl_mesh_zip <- function(mesh,
 #' @return a list object with class mesh3d and shape3d.
 #' @export
 #'
+#' @examples
+#' mesh_store <- system.file("extdata", "ccf_2017_meshes.zip", package = "cocoframer")
+#' structure_id <- mba_structure_id(acronym = "MOp")
+#' MOp_mesh <- read_rgl_mesh(structure_id,
+#'                           zip_file = mesh_store)
 read_rgl_mesh_zip <- function(mesh_name,
                               zip_file,
                               material = "gray") {
@@ -131,4 +139,35 @@ read_rgl_mesh_zip <- function(mesh_name,
   mesh
 
 }
+
+#' Retrieve a CCF 2017 mesh from the cocoframer package
+#'
+#' Must provide either an acronym or a structure_id.
+#'
+#' @param acronym The structure acronym to retrieve. Default is NULL.
+#' @param structure_id The structure_id to retrieve. Defualt is NULL.
+#' @material The rgl material to apply to the mesh. Default is "gray". See ?rgl.material for details.
+#'
+#' @return a 3D mesh object for the selected structure
+#' @export
+#'
+#' @example
+#' BLA_mesh <- ccf_2017_mesh(acronym = "BLA")
+ccf_2017_mesh <- function(acronym = NULL,
+                          structure_id = NULL,
+                          material = "gray") {
+
+  if(is.null(acronym) & is.null(structure_id)) {
+    stop("Must provide either an acronym or a structure_id to retrieve a mesh.")
+  } else if(!is.null(acronym)) {
+    structure_id <- mba_structure_id(acronym)
+  }
+
+  mesh_store <- system.file("extdata", "ccf_2017_meshes.zip", package = "cocoframer")
+
+  read_rgl_mesh_zip(mesh_name = structure_id,
+                    zip_file = mesh_store,
+                    material = material)
+}
+
 

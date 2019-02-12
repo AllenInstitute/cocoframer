@@ -6,10 +6,8 @@
 #' @return An rgl points3d plot
 plot_ccf_structure_points <- function(ccf_arr,
                                       structure_id) {
-  library(reshape2)
-  library(rgl)
 
-  vol_melt <- melt(ccf_arr)
+  vol_melt <- reshape2::melt(ccf_arr)
   vol_melt <- vol_melt[vol_melt$value > 0,]
 
   if(!structure_id %in% unique(vol_melt$value)) {
@@ -18,29 +16,34 @@ plot_ccf_structure_points <- function(ccf_arr,
 
   str_melt <- vol_melt[vol_melt$value == structure_id,]
 
-  points3d(str_melt$Var1,str_melt$Var2,str_melt$Var3)
+  rgl::points3d(str_melt$Var1,str_melt$Var2,str_melt$Var3)
 
 }
 
-plot_brain_explorer_structures <- function(mesh_list,
-                                           main_structure,
-                                           main_color = "#74CAFF",
-                                           main_alpha = 1,
-                                           background_structure = NULL,
-                                           background_color = "#808080",
-                                           background_alpha = 0.2) {
-  if(is.null(background_structure)) {
-    meshes <- mesh_list[main_structure]
-  } else {
-    meshes <- mesh_list[c(main_structure,
-                          background_structure)]
 
-    meshes[[background_structure]]$material <- list(color = background_color,
-                                                    alpha = background_alpha)
+#' Plot 3D structures of Brain explorer regions
+#'
+#' @param mesh_list a named list of one or more 3D mesh objects
+#' @param fg_structure a
+plot_brain_explorer_structures <- function(mesh_list,
+                                           fg_structure,
+                                           fg_color = "#74CAFF",
+                                           fg_alpha = 1,
+                                           bg_structure = NULL,
+                                           bg_color = "#808080",
+                                           bg_alpha = 0.2) {
+  if(is.null(bg_structure)) {
+    meshes <- mesh_list[fg_structure]
+  } else {
+    meshes <- mesh_list[c(fg_structure,
+                          bg_structure)]
+
+    meshes[[bg_structure]]$material <- list(color = bg_color,
+                                                    alpha = bg_alpha)
   }
 
-  meshes[[main_structure]]$material <- list(color = main_color,
-                                            alpha = main_alpha)
+  meshes[[fg_structure]]$material <- list(color = fg_color,
+                                            alpha = fg_alpha)
 
   rgl::view3d(theta = -45, phi = 35, zoom = 0.7)
 

@@ -23,6 +23,8 @@ get_gene_aba_ish_ids <- function(gene_symbol,
 #' @param api_id The ID of the SectionDataSet to retrieve
 #' @param values Which values to retrieve. Options are "energy", "density", "intensity", and "injection". Default = "energy".
 #'
+#' @export
+#'
 #' @return a 3d array with values for each position in the ABA mouse gridAnnotation space at 200 um resolution. Dimension are:
 #' \itemize{
 #'   \item x, 67: anterior/posterior
@@ -33,7 +35,8 @@ get_aba_ish_data <- function(api_id,
                              values = "energy") {
   #ABA API query
   api_query <- paste0("http://api.brain-map.org/grid_data/download/",
-                      api_id,"?include=",values)
+                      api_id,
+                      "?include=",values)
 
   # CCF Annotation Dimensions
   vol_dims <- c(67, 41, 58)
@@ -54,6 +57,8 @@ get_aba_ish_data <- function(api_id,
 #'
 #' @param api_id The ID of the SectionDataSet to retrieve
 #' @param keep_non_atlas Logical, whether to keep or filter structures without an atlas id value. Default = FALSE.
+#'
+#' @export
 #'
 #' @return a data.frame with per-structure atlas expression values:
 #' \itemize{
@@ -103,6 +108,8 @@ get_aba_ish_structure_data <- function(api_id,
 #' Query the ABA API to get relationships between ISH experiments and genes
 #'
 #' @param plane The plane of the ISH experiments to query. Must be either "coronal" or "saggital".
+#'
+#' @export
 #'
 #' @return a data.frame with two columns: id and gene_symbol
 #'
@@ -160,26 +167,35 @@ get_exp_gene_relationships <- function(plane = "coronal") {
 }
 
 
-slice_ccf_mat <- function(mat,
-                         slice_num,
-                         direction = "coronal") {
+#' Slice a 3D CCF array to get a 2D matrix
+#'
+#' @param arr The 3D CCF array to slice
+#' @param slice_num numeric, which slice to select.
+#' @param plane character, which plane to use. Can be "coronal", "saggital", or "horizontal".
+#'
+#' @return A matrix of values from the selected slice.
+#' @export
+#'
+slice_ccf_arr <- function(arr,
+                          slice_num,
+                          plane = "coronal") {
 
 
-  if(direction == "coronal") {
-    return(mat[slice_num, , ])
+  if(plane == "coronal") {
+    return(arr[slice_num, , ])
   }
-  if(direction == "horizontal") {
-    return(mat[, slice_num, ])
+  if(plane == "horizontal") {
+    return(arr[, slice_num, ])
   }
-  if(direction == "saggital") {
-    return(mat[, , slice_num])
+  if(plane == "saggital") {
+    return(arr[, , slice_num])
   }
 }
 
 ish_slice_heatmap <- function(mat,
                               anno = NULL,
                               slice_num,
-                              direction = "coronal",
+                              plane = "coronal",
                               normalize = "slice",
                               colorset = c("darkblue","gray90","red")) {
 
@@ -188,7 +204,7 @@ ish_slice_heatmap <- function(mat,
   library(reshape2)
   library(scrattch.vis)
 
-  slice_mat <- slice_ccf_mat(mat, slice_num, direction)
+  slice_arr <- slice_ccf_mat(mat, slice_num, plane)
 
   if(normalize == "slice") {
     max_val <- max(slice_mat)
@@ -196,11 +212,11 @@ ish_slice_heatmap <- function(mat,
     max_val <- max(mat)
   }
 
-  slice_flat <- melt(slice_mat)
+  slice_flat <- reshape2::melt(slice_mat)
   names(slice_flat) <- c("y","x","value")
 
   slice_flat$value[slice_flat$value < 0] <- 0
-  slice_flat$color <- values_to_colors(slice_flat$value,
+  slice_flat$color <- scrattch.vis::values_to_colors(slice_flat$value,
                                        colorset = colorset,
                                        min_val = 0,
                                        max_val = max_val)
@@ -208,37 +224,37 @@ ish_slice_heatmap <- function(mat,
   if(is.null(anno)) {
     hover_list <- list("Value" = "value")
   } else {
-    anno_flat <- melt(slice_ccf_mat(anno, slice_num, direction))
+    anno_flat <- reshape2::melt(slice_ccf_mat(anno, slice_num, plane))
     names(anno_flat) <- c("y","x","annotation")
-    slice_flat <- left_join(slice_flat, anno_flat, by = c("x","y"))
+    slice_flat <- dplyr::left_join(slice_flat, anno_flat, by = c("x","y"))
     hover_list <- list("Value" = "value",
                        "Annotation" = "annotation")
   }
 
-  if(direction == "coronal") {
-    f <- figure(width = dim(slice_mat)[2]*10,
+  if(plane == "coronal") {
+    f <- rbokeh::figure(width = dim(slice_mat)[2]*10,
                 height = dim(slice_mat)[1]*10) %>%
-      ly_crect(data = slice_flat,
+      rbokeh::ly_crect(data = slice_flat,
                x = x,
                y = -y,
                fill_color = color,
                line_color = NA,
                fill_alpha = 1,
                hover = hover_list)
-  } else if(direction == "horizontal") {
-    f <- figure(width = dim(slice_mat)[1]*10,
+  } else if(plane == "horizontal") {
+    f <- rbokeh::figure(width = dim(slice_mat)[1]*10,
                 height = dim(slice_mat)[2]*10) %>%
-      ly_crect(data = slice_flat,
+      rbokeh::ly_crect(data = slice_flat,
                x = y,
                y = x,
                fill_color = color,
                line_color = NA,
                fill_alpha = 1,
                hover = hover_list)
-  } else if(direction == "saggital") {
-    f <- figure(width = dim(slice_mat)[1]*10,
+  } else if(plane == "saggital") {
+    f <- rbokeh::figure(width = dim(slice_mat)[1]*10,
                 height = dim(slice_mat)[2]*10) %>%
-      ly_crect(data = slice_flat,
+      rbokeh::ly_crect(data = slice_flat,
                x = y,
                y = -x,
                fill_color = color,
@@ -253,13 +269,13 @@ ish_slice_heatmap <- function(mat,
 }
 
 
-ish_slice_heatmap_3color <- function(mat_list,
+ish_slice_heatmap_3color <- function(arr_list,
                                      anno = NULL,
-                               slice_num,
-                               colors = c("#FF0000","#00FF00","#0000FF"),
-                               direction = "coronal",
-                               normalize = "slice",
-                               scale = "linear") {
+                                     slice_num,
+                                     colors = c("#FF0000","#00FF00","#0000FF"),
+                                     plane = "coronal",
+                                     normalize = "slice",
+                                     scale = "linear") {
 
   library(rbokeh)
   library(reshape2)
@@ -267,7 +283,7 @@ ish_slice_heatmap_3color <- function(mat_list,
   library(dplyr)
   library(scrattch.vis)
 
-  slice_mat_list <- map(mat_list, slice_ccf_mat, slice_num, direction)
+  slice_mat_list <- map(arr_list, slice_ccf_mat, slice_num, plane)
 
   slice_mat_list <- map(slice_mat_list,
                         function(x) {
@@ -282,7 +298,7 @@ ish_slice_heatmap_3color <- function(mat_list,
   if(normalize == "slice") {
     max_vals <- map_dbl(slice_mat_list, max)
   } else if(normalize == "all") {
-    max_vals <- map_dbl(mat_list, max)
+    max_vals <- map_dbl(arr_list, max)
   }
 
   slice_flat_list <- map(slice_mat_list,
@@ -339,14 +355,14 @@ ish_slice_heatmap_3color <- function(mat_list,
   if(is.null(anno)) {
     hover_list <- list("Value" = "color")
   } else {
-    anno_flat <- melt(slice_ccf_mat(anno, slice_num, direction))
+    anno_flat <- melt(slice_ccf_mat(anno, slice_num, plane))
     names(anno_flat) <- c("y","x","annotation")
     slice_flat <- left_join(slice_flat, anno_flat, by = c("x","y"))
     hover_list <- list("Value" = "color",
                        "Annotation" = "annotation")
   }
 
-  if(direction == "coronal") {
+  if(plane == "coronal") {
     f <- figure(width = dim(slice_mat_list[[1]])[2]*10,
                 height = dim(slice_mat_list[[1]])[1]*10) %>%
       ly_crect(data = slice_flat,
@@ -356,7 +372,7 @@ ish_slice_heatmap_3color <- function(mat_list,
                   line_color = NA,
                   fill_alpha = 1,
                   hover = hover_list)
-  } else if(direction == "horizontal") {
+  } else if(plane == "horizontal") {
     f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
                 height = dim(slice_mat_list[[1]])[2]*10) %>%
       ly_crect(data = slice_flat,
@@ -366,7 +382,7 @@ ish_slice_heatmap_3color <- function(mat_list,
                line_color = NA,
                fill_alpha = 1,
                hover = hover_list)
-  } else if(direction == "saggital") {
+  } else if(plane == "saggital") {
     f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
                 height = dim(slice_mat_list[[1]])[2]*10) %>%
       ly_crect(data = slice_flat,
@@ -382,12 +398,12 @@ ish_slice_heatmap_3color <- function(mat_list,
 
 }
 
-ish_slice_heatmap_funs <- function(mat_list,
+ish_slice_heatmap_funs <- function(arr_list,
                                    anno = NULL,
                                    slice_num,
                                    funs,
                                    colorset = c("#000000","#FFFFFF"),
-                                   direction = "coronal",
+                                   plane = "coronal",
                                    normalize = "slice",
                                    scale = "linear") {
 
@@ -397,7 +413,7 @@ ish_slice_heatmap_funs <- function(mat_list,
   library(dplyr)
   library(scrattch.vis)
 
-  slice_mat_list <- map(mat_list, slice_ccf_mat, slice_num, direction)
+  slice_mat_list <- map(arr_list, slice_ccf_mat, slice_num, plane)
 
   slice_mat_list <- map(slice_mat_list,
                         function(x) {
@@ -412,18 +428,18 @@ ish_slice_heatmap_funs <- function(mat_list,
   if(normalize == "slice") {
     max_vals <- map_dbl(slice_mat_list, max)
   } else if(normalize == "all") {
-    max_vals <- map_dbl(mat_list, max)
+    max_vals <- map_dbl(arr_list, max)
   }
 
   slice_mat_list <- map2(slice_mat_list,
                          max_vals,
                          function(x, y) { x / y })
 
-  slice_mat <- slice_mat_list[[1]]
-  slice_mat[slice_mat > 0] <- 0
+  slice_arr <- slice_mat_list[[1]]
+  slice_mat[slice_arr > 0] <- 0
 
   for(i in 1:length(slice_mat_list)) {
-    slice_mat <- eval(call(funs[i], slice_mat, slice_mat_list[[i]]))
+    slice_arr <- eval(call(funs[i], slice_mat, slice_mat_list[[i]]))
   }
 
   slice_flat <- melt(slice_mat)
@@ -436,14 +452,14 @@ ish_slice_heatmap_funs <- function(mat_list,
   if(is.null(anno)) {
     hover_list <- list("Value" = "value")
   } else {
-    anno_flat <- melt(slice_ccf_mat(anno, slice_num, direction))
+    anno_flat <- melt(slice_ccf_mat(anno, slice_num, plane))
     names(anno_flat) <- c("y","x","annotation")
     slice_flat <- left_join(slice_flat, anno_flat, by = c("x","y"))
     hover_list <- list("Value" = "value",
                        "Annotation" = "annotation")
   }
 
-  if(direction == "coronal") {
+  if(plane == "coronal") {
     f <- figure(width = dim(slice_mat_list[[1]])[2]*10,
                 height = dim(slice_mat_list[[1]])[1]*10) %>%
       ly_crect(data = slice_flat,
@@ -453,7 +469,7 @@ ish_slice_heatmap_funs <- function(mat_list,
                line_color = NA,
                fill_alpha = 1,
                hover = hover_list)
-  } else if(direction == "horizontal") {
+  } else if(plane == "horizontal") {
     f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
                 height = dim(slice_mat_list[[1]])[2]*10) %>%
       ly_crect(data = slice_flat,
@@ -463,7 +479,7 @@ ish_slice_heatmap_funs <- function(mat_list,
                line_color = NA,
                fill_alpha = 1,
                hover = hover_list)
-  } else if(direction == "saggital") {
+  } else if(plane == "saggital") {
     f <- figure(width = dim(slice_mat_list[[1]])[1]*10,
                 height = dim(slice_mat_list[[1]])[2]*10) %>%
       ly_crect(data = slice_flat,
@@ -477,4 +493,4 @@ ish_slice_heatmap_funs <- function(mat_list,
 
   return(f)
 }
-mouse_organism_id <- 2
+
