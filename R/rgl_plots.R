@@ -24,10 +24,10 @@ plot_ccf_structure_points <- function(ccf_arr,
 #' Plot 3D structures from the CCF
 #'
 #' @param mesh_list a named list of one or more 3D mesh objects
-#' @param fg_structure The name of the structure to plot as a foreground (solid) object.
+#' @param fg_structure The name(s) of the structure to plot as a foreground (solid) object.
 #' @param fg_color The color to use for the foreground object (default is light blue, "#74CAFF").
 #' @param fg_alpha The alpha/opacity of the foreground object (default is 1).
-#' @param bg_structure The name of the structure to plot as a background (semitransparent) object.
+#' @param bg_structure The name(s) of the structure to plot as a background (semitransparent) object.
 #' @param bg_color The color to use for the background object (default is medium gray, "#808080").
 #' @param bg_alpha The alpha/opacity of the background object (default is 0.2)
 #'
@@ -48,16 +48,22 @@ plot_ccf_meshes <- function(mesh_list,
     meshes <- mesh_list[c(fg_structure,
                           bg_structure)]
 
-    for(bgs in bg_structure) {
-      meshes[[bgs]]$material <- list(color = bg_color,
-                                              alpha = bg_alpha)
+    bg_colors <- rep(bg_color, length.out = length(bg_structure))
+    bg_alphas <- rep(bg_alpha, length.out = length(bg_structure))
+
+    for(i in seq_along(bg_structure)) {
+      meshes[[bg_structure[i]]]$material <- list(color = bg_colors[i],
+                                                 alpha = bg_alphas[i])
     }
 
   }
 
-  for(fgs in fg_structure) {
-    meshes[[fgs]]$material <- list(color = fg_color,
-                                   alpha = fg_alpha)
+  fg_colors <- rep(fg_color, length.out = length(fg_structure))
+  fg_alphas <- rep(fg_alpha, length.out = length(fg_structure))
+
+  for(i in seq_along(fg_structure)) {
+    meshes[[fg_structure[i]]]$material <- list(color = fg_colors[i],
+                                               alpha = fg_alphas[i])
   }
 
 
