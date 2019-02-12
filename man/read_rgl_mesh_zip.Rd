@@ -22,4 +22,13 @@ This is currently only intended to work with triangular faces.
 \details{
 This reverses the proccessing in save_rgl_mesh_zip() to rebuild the mesh object
 from binary vectors.
+
+If you're looking for a simple way to get a brain structure, use ccf_2017_mesh, which wraps this
+function, and retrieves a mesh that's included in this package.
+}
+\examples{
+mesh_store <- system.file("extdata", "ccf_2017_meshes.zip", package = "cocoframer")
+structure_id <- mba_structure_id(acronym = "MOp")
+MOp_mesh <- read_rgl_mesh(structure_id,
+                          zip_file = mesh_store)
 }

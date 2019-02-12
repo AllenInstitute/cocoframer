@@ -5,7 +5,7 @@
 \title{Read a .obj file to get a rgl-compatible mesh object}
 \usage{
 obj_to_mesh(obj, material = "gray", invert_y = TRUE, yrange = c(0,
-  1))
+  8000))
 }
 \arguments{
 \item{obj}{A character object with the location of a .obj file.}
@@ -14,7 +14,7 @@ obj_to_mesh(obj, material = "gray", invert_y = TRUE, yrange = c(0,
 
 \item{invert_y}{Logical. Whether to flip the object in the y-dimensions. This is useful for AIBS mesh objects. Default is TRUE.}
 
-\item{yrange}{Length 2 numeric vector indicating the range to use for inversion. Default is c(0,1).}
+\item{yrange}{Length 2 numeric vector indicating the range to use for inversion. Default is c(0,8000).}
 }
 \value{
 a list object with class mesh3d and shape3d.
