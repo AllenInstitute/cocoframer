@@ -128,6 +128,9 @@ read_rgl_mesh_zip <- function(mesh_name,
   vb_vector <- readBin(in_vb, "numeric", n = n_vb)
   it_vector <- readBin(in_it, "integer", n = n_it)
 
+  close(in_vb)
+  close(in_it)
+
   vb_mat <- matrix(vb_vector, nrow = 3)
   it_mat <- matrix(it_vector, nrow = 3)
 
