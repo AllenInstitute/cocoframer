@@ -24,7 +24,16 @@ plot_ccf_structure_points <- function(ccf_arr,
 #' Plot 3D structures of Brain explorer regions
 #'
 #' @param mesh_list a named list of one or more 3D mesh objects
-#' @param fg_structure a
+#' @param fg_structure The name of the structure to plot as a foreground (solid) object.
+#' @param fg_color The color to use for the foreground object (default is light blue, "#74CAFF").
+#' @param fg_alpha The alpha/opacity of the foreground object (default is 1).
+#' @param bg_structure The name of the structure to plot as a background (semitransparent) object.
+#' @param bg_color The color to use for the background object (default is medium gray, "#808080").
+#' @param bg_alpha The alpha/opacity of the background object (default is 0.2)
+#'
+#' @return a 3D plot in an RGL window.
+#'
+#' @export
 plot_brain_explorer_structures <- function(mesh_list,
                                            fg_structure,
                                            fg_color = "#74CAFF",
