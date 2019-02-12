@@ -35,6 +35,61 @@ Some functions in cocoframer retrieve data from the Allen Brain Atlas API, and s
 
 These functions are prefixed with `get_`.
 
+### Examples
+
+**Plotting a 3D brain structure**  
+
+cocoframer includes 3D mesh objects from version 3 of the CCF (2017). These can be retrieved with cocoframer and plotted using the rgl package.  
+
+In this example, we'll retrieve and plot the Hippocampal Amon's Horn (CA in the ABA structural ontology).
+```
+library(cocoframer)
+library(rgl)
+
+CA_mesh <- ccf_2017_mesh(acronym = "CA")
+
+shape3d(CA_mesh)
+```
+
+**Plotting multiple 3D brain structures**  
+
+To get some context, it's sometimes helpful to plot multiple structures.  
+
+Here, we'll use a helper function included in cocoframer to plot the shell of the CCF (called root in the ABA structural ontology) with the CA:  
+```
+library(cocoframer)
+library(purrr)
+library(rgl)
+
+structures <- c("root","CA")
+mesh_list <- map(structures, ccf_2017_mesh)
+
+plot_brain_explorer_structures(mesh_list,
+                               fg_structure = "CA",
+                               bg_structure = "root")
+```
+
+You can change the color and opacity of structures with additional parameters:
+
+```
+plot_brain_explorer_structures(mesh_list,
+                               fg_structure = "CA",
+                               fg_color = "orangered",
+                               fg_alpha = 0.4,
+                               bg_structure = "root",
+                               bg_color = "yellow",
+                               bg_alpha = 0.4)
+```
+
+### Common acronyms
+
+These acronyms are used repeatedly in function names in cocoframer:  
+
+aba: Allen Brain Atlas  
+ccf: Common Coordinate Framework  
+mba: Mouse Brain Atlas  
+ish: In-Situ Hybridization  
+
 ### License
 
 The license for this package is available on Github at: https://github.com/AllenInstitute/cocoframer/blob/master/LICENSE
