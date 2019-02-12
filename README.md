@@ -66,21 +66,21 @@ mesh_list <- map(structures, ccf_2017_mesh)
 
 names(mesh_list) <- structures
 
-plot_brain_explorer_structures(mesh_list,
-                               fg_structure = "CA",
-                               bg_structure = "root")
+plot_ccf_meshes(mesh_list,
+                fg_structure = "CA",
+                bg_structure = "root")
 ```
 
 You can change the color and opacity of structures with additional parameters:
 
 ```
-plot_brain_explorer_structures(mesh_list,
-                               fg_structure = "CA",
-                               fg_color = "orangered",
-                               fg_alpha = 0.4,
-                               bg_structure = "root",
-                               bg_color = "yellow",
-                               bg_alpha = 0.4)
+plot_ccf_meshes(mesh_list,
+                fg_structure = "CA",
+                fg_color = "orangered",
+                fg_alpha = 0.4,
+                bg_structure = "root",
+                bg_color = "yellow",
+                bg_alpha = 0.4)
 ```
 
 ### Common acronyms

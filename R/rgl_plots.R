@@ -21,7 +21,7 @@ plot_ccf_structure_points <- function(ccf_arr,
 }
 
 
-#' Plot 3D structures of Brain explorer regions
+#' Plot 3D structures from the CCF
 #'
 #' @param mesh_list a named list of one or more 3D mesh objects
 #' @param fg_structure The name of the structure to plot as a foreground (solid) object.
@@ -34,25 +34,32 @@ plot_ccf_structure_points <- function(ccf_arr,
 #' @return a 3D plot in an RGL window.
 #'
 #' @export
-plot_brain_explorer_structures <- function(mesh_list,
-                                           fg_structure,
-                                           fg_color = "#74CAFF",
-                                           fg_alpha = 1,
-                                           bg_structure = NULL,
-                                           bg_color = "#808080",
-                                           bg_alpha = 0.2) {
+plot_ccf_meshes <- function(mesh_list,
+                            fg_structure,
+                            fg_color = "#74CAFF",
+                            fg_alpha = 1,
+                            bg_structure = NULL,
+                            bg_color = "#808080",
+                            bg_alpha = 0.2) {
+
   if(is.null(bg_structure)) {
     meshes <- mesh_list[fg_structure]
   } else {
     meshes <- mesh_list[c(fg_structure,
                           bg_structure)]
 
-    meshes[[bg_structure]]$material <- list(color = bg_color,
-                                                    alpha = bg_alpha)
+    for(bgs in bg_structure) {
+      meshes[[bgs]]$material <- list(color = bg_color,
+                                              alpha = bg_alpha)
+    }
+
   }
 
-  meshes[[fg_structure]]$material <- list(color = fg_color,
-                                            alpha = fg_alpha)
+  for(fgs in fg_structure) {
+    meshes[[fgs]]$material <- list(color = fg_color,
+                                   alpha = fg_alpha)
+  }
+
 
   rgl::view3d(theta = -45, phi = 35, zoom = 0.7)
 
