@@ -48,7 +48,7 @@ library(rgl)
 
 CA_mesh <- ccf_2017_mesh(acronym = "CA")
 
-shape3d(CA_mesh)
+shapelist3d(CA_mesh)
 ```
 
 **Plotting multiple 3D brain structures**  
@@ -63,6 +63,8 @@ library(rgl)
 
 structures <- c("root","CA")
 mesh_list <- map(structures, ccf_2017_mesh)
+
+names(mesh_list) <- structures
 
 plot_brain_explorer_structures(mesh_list,
                                fg_structure = "CA",
