@@ -83,6 +83,63 @@ plot_ccf_meshes(mesh_list,
                 bg_alpha = 0.4)
 ```
 
+It's straightforward to plot multiple structures, each with their own color:
+```
+library(cocoframer)
+library(purrr)
+
+structures <- c("root","TH","MOs","P")
+mesh_list <- map(structures, ccf_2017_mesh)
+
+names(mesh_list) <- structures
+
+plot_ccf_meshes(mesh_list,
+                fg_structure = c("MOs","TH","P"),
+                fg_color = c("orangered","skyblue","purple"),
+                bg_structure = "root")
+
+```
+
+Exporting an image for use in a figure is handled by the rgl package:
+```
+plot_ccf_meshes(mesh_list,
+                fg_structure = c("MOs","TH","P"),
+                fg_color = c("orangered","skyblue","purple"),
+                bg_structure = "root")
+
+rgl.snapshot("secondary_motor_and_targets.png")
+```
+
+
+And exporting each structure in a list can be accomplished with purrr::walk() :
+```
+library(cocoframer)
+library(purrr)
+
+structures <- c("root","TH","MOs","P")
+mesh_list <- map(structures, ccf_2017_mesh)
+
+names(mesh_list) <- structures
+
+open3d()
+walk(structures,
+     function(structure) {
+     
+       clear3d()
+       
+       if(structure == "root") {
+         plot_ccf_meshes(mesh_list,
+                         main_structure = structure)
+       } else {
+         plot_ccf_meshes(mesh_list,
+                         main_structure = structure,
+                         background_structure = "root")
+       }
+       
+       rgl.snapshot(paste0(structure,".png"))
+     })
+```
+
 ### Common acronyms
 
 These acronyms are used repeatedly in function names in cocoframer:  
