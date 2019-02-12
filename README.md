@@ -100,6 +100,21 @@ plot_ccf_meshes(mesh_list,
 
 ```
 
+Of course, root doesn't have to be the background structure. Suppose you wanted to see how structures within the thalamus were positioned relative to each other:
+```
+th_str <- c("TH","LGd","LP","LGv","RT")
+th_meshes <- map(th_str, ccf_2017_mesh)
+
+names(th_meshes) <- th_str
+
+plot_ccf_meshes(th_meshes,
+                fg_structure = c("LGd","LGv","LP","RT"),
+                fg_color = c("orangered","skyblue","purple","darkgreen"),
+                bg_structure = c("TH"))
+
+```
+**Saving 3D plot snapshots as images**  
+
 Exporting an image for use in a figure is handled by the rgl package:
 ```
 plot_ccf_meshes(mesh_list,
@@ -139,7 +154,31 @@ walk(structures,
        rgl.snapshot(paste0(structure,".png"))
      })
 ```
+**Saving 3D plot objects as interactive HTML widgets**  
 
+You can also save the interactive plot to HTML for later viewing in a web browser, with the assistance of the htmlwidgets package:
+```
+library(cocoframer)
+library(purrr)
+library(rgl)
+library(htmlwidgets)
+
+th_str <- c("TH","LGd","LP","LGv","RT")
+th_meshes <- map(th_str, ccf_2017_mesh)
+
+names(th_meshes) <- th_str
+
+plot_ccf_meshes(th_meshes,
+                fg_structure = c("LGd","LGv","LP","RT"),
+                fg_color = c("orangered","skyblue","purple","darkgreen"),
+                bg_structure = c("TH"))
+                
+th_widget <- rglwidget(scene3d(), # Captures the currently 3D rgl plot
+                       width = 600, 
+                       height = 600)
+
+saveWidget(th_widget, "th_structure_widget.html")
+```
 ### Common acronyms
 
 These acronyms are used repeatedly in function names in cocoframer:  
