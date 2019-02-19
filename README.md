@@ -179,6 +179,35 @@ th_widget <- rglwidget(scene3d(), # Captures the current 3D rgl plot
 
 saveWidget(th_widget, "th_structure_widget.html")
 ```
+
+### Animations in rgl
+
+The rgl package provides a robust framework for 3D animations. A simple example is making a spinning GIF of your brain structures of interest:
+```
+library(cocoframer)
+library(purrr)
+
+structures <- c("root","TH","MOs","P")
+mesh_list <- map(structures, ccf_2017_mesh)
+
+names(mesh_list) <- structures
+
+plot_ccf_meshes(mesh_list,
+                fg_structure = c("MOs","TH","P"),
+                fg_color = c("orangered","skyblue","purple"),
+                bg_structure = "root")
+
+anim <- spin3d(axis=c(0,1,0), # Spin on the y-axis
+               rpm = 12)
+
+movie3d(anim, 
+        fps = 20, # 20 fps is fairly smooth
+        duration = 5, # 5 sec = 1 rotation at 12 rpm
+        movie = "brain_demo", # Save as brain_demo.gif
+        dir = "./", # Output directory - will make a lot of temporary files.
+        type = "gif")
+```
+
 ### Common acronyms
 
 These acronyms are used repeatedly in function names in cocoframer:  
