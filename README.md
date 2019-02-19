@@ -29,6 +29,16 @@ cocoframer can be installed with:
 devtools::install_github("AllenInstitute/cocoframer")
 ```
 
+### Citation
+
+If you use cocoframer to access Allen Brain Atlas ISH Data, please cite:  
+Lein, E.S. et al. (2007) Genome-wide atlas of gene expression in the adult mouse brain, Nature 445: 168-176. doi:10.1038/nature05453
+
+If you use cocoframer to make your own 3D brain structure images and animations, please cite:  
+© 2018 Allen Institute for Brain Science. Allen Brain Explorer. Available from: connectivity.brain-map.org/3d-viewer/
+
+For other general citation issues, please refer to the Allen Institute Citation Policy: https://alleninstitute.org/legal/citation-policy/  
+
 ### Internet connection requirements
 
 Some functions in cocoframer retrieve data from the Allen Brain Atlas API, and so require an internet connection.  
