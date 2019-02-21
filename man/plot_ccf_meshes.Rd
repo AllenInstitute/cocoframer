@@ -11,13 +11,13 @@ plot_ccf_meshes(mesh_list, fg_structure, fg_color = "#74CAFF",
 \arguments{
 \item{mesh_list}{a named list of one or more 3D mesh objects}
 
-\item{fg_structure}{The name of the structure to plot as a foreground (solid) object.}
+\item{fg_structure}{The name(s) of the structure to plot as a foreground (solid) object.}
 
 \item{fg_color}{The color to use for the foreground object (default is light blue, "#74CAFF").}
 
 \item{fg_alpha}{The alpha/opacity of the foreground object (default is 1).}
 
-\item{bg_structure}{The name of the structure to plot as a background (semitransparent) object.}
+\item{bg_structure}{The name(s) of the structure to plot as a background (semitransparent) object.}
 
 \item{bg_color}{The color to use for the background object (default is medium gray, "#808080").}
 

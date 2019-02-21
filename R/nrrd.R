@@ -9,7 +9,7 @@
 #'
 #' @return a 3 dimensional integer array with dims
 #'
-# @export Note: As of 2018-12-24, this function fails to retrieve correct values, so not exported.
+#' @export
 read_aibs_nrrd <- function (file,
                             dims = c(528, 320, 456),
                             header_lines = 15)
