@@ -1,5 +1,4 @@
 # Package dependencies:
-Sys.setenv(GITHUB_PAT = "9b82cd611afd98554b9753cb1e5df8e40e5012e2")
 devtools::install_github("AllenInstitute/cocoframer")
 # devtools::install_github("AllenInstitute/scrattch.vis")
 # install.packages(c("reshape2","dplyr","purrr","rbokeh","viridisLite"))
