@@ -25,10 +25,10 @@ plot_ccf_structure_points <- function(ccf_arr,
 #'
 #' @param mesh_list a named list of one or more 3D mesh objects
 #' @param fg_structure The name(s) of the structure to plot as a foreground (solid) object.
-#' @param fg_color The color to use for the foreground object (default is light blue, "#74CAFF").
+#' @param fg_color The color to use for the foreground object (default is NULL, which retains mesh material).
 #' @param fg_alpha The alpha/opacity of the foreground object (default is 1).
 #' @param bg_structure The name(s) of the structure to plot as a background (semitransparent) object.
-#' @param bg_color The color to use for the background object (default is medium gray, "#808080").
+#' @param bg_color The color to use for the background object (default is NULL, which retains mesh material).
 #' @param bg_alpha The alpha/opacity of the background object (default is 0.2)
 #'
 #' @return a 3D plot in an RGL window.
@@ -36,10 +36,10 @@ plot_ccf_structure_points <- function(ccf_arr,
 #' @export
 plot_ccf_meshes <- function(mesh_list,
                             fg_structure,
-                            fg_color = "#74CAFF",
+                            fg_color = NULL,
                             fg_alpha = 1,
                             bg_structure = NULL,
-                            bg_color = "#808080",
+                            bg_color = NULL,
                             bg_alpha = 0.2) {
 
   if(is.null(bg_structure)) {
@@ -47,25 +47,38 @@ plot_ccf_meshes <- function(mesh_list,
   } else {
     meshes <- mesh_list[c(fg_structure,
                           bg_structure)]
-
-    bg_colors <- rep(bg_color, length.out = length(bg_structure))
+    if(!is.null(bg_color)) {
+      bg_colors <- rep(bg_color, length.out = length(bg_structure))
+    }
     bg_alphas <- rep(bg_alpha, length.out = length(bg_structure))
 
     for(i in seq_along(bg_structure)) {
-      meshes[[bg_structure[i]]]$material <- list(color = bg_colors[i],
-                                                 alpha = bg_alphas[i])
+      if(is.null(bg_color)) {
+        meshes[[bg_structure[i]]]$material$alpha <- bg_alphas[i]
+      } else {
+        meshes[[bg_structure[i]]]$material <- list(color = bg_colors[i],
+                                                   alpha = bg_alphas[i])
+      }
+
     }
 
   }
 
-  fg_colors <- rep(fg_color, length.out = length(fg_structure))
+
+  if(!is.null(fg_color)) {
+    fg_colors <- rep(fg_color, length.out = length(fg_structure))
+  }
   fg_alphas <- rep(fg_alpha, length.out = length(fg_structure))
 
   for(i in seq_along(fg_structure)) {
-    meshes[[fg_structure[i]]]$material <- list(color = fg_colors[i],
-                                               alpha = fg_alphas[i])
-  }
+    if(is.null(fg_color)) {
+      meshes[[fg_structure[i]]]$material$alpha <- fg_alphas[i]
+    } else {
+      meshes[[fg_structure[i]]]$material <- list(color = fg_colors[i],
+                                                 alpha = fg_alphas[i])
+    }
 
+  }
 
   rgl::view3d(theta = -45, phi = 35, zoom = 0.7)
 

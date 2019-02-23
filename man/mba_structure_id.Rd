@@ -2,16 +2,19 @@
 % Please edit documentation in R/ontology.R
 \name{mba_structure_id}
 \alias{mba_structure_id}
-\title{Get the Mouse Brain Atlas numeric structure ID for a given structure acronym}
+\title{Get the Mouse Brain Atlas numeric structure ID(s) for given structure acronym(s)}
 \usage{
 mba_structure_id(acronym)
 }
 \arguments{
-\item{acronym}{The structure acronym to use.}
+\item{acronym}{The structure acronym(s) to use.}
 }
 \value{
-a numeric value for the target structure ID.
+numeric value(s) for the target structure ID.
 }
 \description{
 This retrieves the ID from an internal storage source in the package.
+}
+\examples{
+MOp_id <- mba_structure_id("MOp")
 }

@@ -26,9 +26,13 @@ walk(1:length(obj_files),
        save_rgl_mesh_zip(mesh, obj_names[x], "ccf_2017_meshes.zip")
      })
 
+library(dplyr)
 
 ont <- flatten_mba_ontology(get_mba_ontology())
 
-ont <- ont[,c("id","acronym","name")]
+ont <- ont %>%
+  mutate(color = paste0("#",color_hex_triplet))
+
+ont <- ont[,c("id","acronym","name","color")]
 
 write.csv(ont, "inst/extdata/mba_structure_id_to_acronym.csv", row.names = FALSE)

@@ -4,22 +4,21 @@
 \alias{plot_ccf_meshes}
 \title{Plot 3D structures from the CCF}
 \usage{
-plot_ccf_meshes(mesh_list, fg_structure, fg_color = "#74CAFF",
-  fg_alpha = 1, bg_structure = NULL, bg_color = "#808080",
-  bg_alpha = 0.2)
+plot_ccf_meshes(mesh_list, fg_structure, fg_color = NULL, fg_alpha = 1,
+  bg_structure = NULL, bg_color = NULL, bg_alpha = 0.2)
 }
 \arguments{
 \item{mesh_list}{a named list of one or more 3D mesh objects}
 
 \item{fg_structure}{The name(s) of the structure to plot as a foreground (solid) object.}
 
-\item{fg_color}{The color to use for the foreground object (default is light blue, "#74CAFF").}
+\item{fg_color}{The color to use for the foreground object (default is NULL, which retains mesh material).}
 
 \item{fg_alpha}{The alpha/opacity of the foreground object (default is 1).}
 
 \item{bg_structure}{The name(s) of the structure to plot as a background (semitransparent) object.}
 
-\item{bg_color}{The color to use for the background object (default is medium gray, "#808080").}
+\item{bg_color}{The color to use for the background object (default is NULL, which retains mesh material).}
 
 \item{bg_alpha}{The alpha/opacity of the background object (default is 0.2)}
 }

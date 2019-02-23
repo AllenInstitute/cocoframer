@@ -295,19 +295,34 @@ compute_children <- function(df,
   res
 }
 
-#' Get the Mouse Brain Atlas numeric structure ID for a given structure acronym
+#' Get the Mouse Brain Atlas numeric structure ID(s) for given structure acronym(s)
 #'
 #' This retrieves the ID from an internal storage source in the package.
 #'
-#' @param acronym The structure acronym to use.
+#' @param acronym The structure acronym(s) to use.
 #'
-#' @return a numeric value for the target structure ID.
+#' @return numeric value(s) for the target structure ID.
 #'
 #' @export
 #'
-#' @example
+#' @examples
 #' MOp_id <- mba_structure_id("MOp")
 mba_structure_id <- function(acronym) {
+
   id_table <- read.csv(system.file("extdata", "mba_structure_id_to_acronym.csv", package = "cocoframer"))
-  id_table$id[id_table$acronym == acronym]
+  matching_acronyms <- intersect(acronym, id_table$acronym)
+
+  if(length(matching_acronyms) == 0) {
+    stop(paste("Couldn't find a match for any acronyms provided:",
+               paste(acronym, collapse = ", ")))
+  }
+
+  missing_acronyms <- setdiff(acronym, id_table$acronym)
+  if(length(missing_acronyms > 0)) {
+    warning(paste("Couldn't find a match for these acronym(s):",
+                  paste(missing_acronyms, collapse = ", ")))
+  }
+
+
+  id_table$id[match(matching_acronyms, id_table$acronym)]
 }

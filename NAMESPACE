@@ -2,6 +2,7 @@
 
 export(aibs_dims)
 export(aibs_organism_id)
+export(ccf_2017_color)
 export(ccf_2017_mesh)
 export(cleanup_taxons)
 export(compute_hierarchical)

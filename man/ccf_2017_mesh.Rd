@@ -4,16 +4,22 @@
 \alias{ccf_2017_mesh}
 \title{Retrieve a CCF 2017 mesh from the cocoframer package}
 \usage{
-ccf_2017_mesh(acronym = NULL, structure_id = NULL, material = "gray")
+ccf_2017_mesh(acronym = NULL, structure_id = NULL, material = NULL)
 }
 \arguments{
 \item{acronym}{The structure acronym to retrieve. Default is NULL.}
 
 \item{structure_id}{The structure_id to retrieve. Defualt is NULL.}
+
+\item{material}{The rgl material to apply to the mesh. Default is NULL, which uses the ABA ontology colorset.
+See ?rgl.material for details and additional options.}
 }
 \value{
 a 3D mesh object for the selected structure
 }
 \description{
 Must provide either an acronym or a structure_id.
+}
+\examples{
+BLA_mesh <- ccf_2017_mesh(acronym = "BLA")
 }

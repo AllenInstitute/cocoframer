@@ -149,16 +149,17 @@ read_rgl_mesh_zip <- function(mesh_name,
 #'
 #' @param acronym The structure acronym to retrieve. Default is NULL.
 #' @param structure_id The structure_id to retrieve. Defualt is NULL.
-#' @material The rgl material to apply to the mesh. Default is "gray". See ?rgl.material for details.
+#' @param material The rgl material to apply to the mesh. Default is NULL, which uses the ABA ontology colorset.
+#' See ?rgl.material for details and additional options.
 #'
 #' @return a 3D mesh object for the selected structure
 #' @export
 #'
-#' @example
+#' @examples
 #' BLA_mesh <- ccf_2017_mesh(acronym = "BLA")
 ccf_2017_mesh <- function(acronym = NULL,
                           structure_id = NULL,
-                          material = "gray") {
+                          material = NULL) {
 
   if(is.null(acronym) & is.null(structure_id)) {
     stop("Must provide either an acronym or a structure_id to retrieve a mesh.")
@@ -168,9 +169,43 @@ ccf_2017_mesh <- function(acronym = NULL,
 
   mesh_store <- system.file("extdata", "ccf_2017_meshes.zip", package = "cocoframer")
 
+  if(is.null(material)) {
+    if(acronym == "root") {
+      material <- list(color = "gray")
+    } else {
+      material <- list(color = ccf_2017_color(structure_id = structure_id))
+    }
+  }
+
   read_rgl_mesh_zip(mesh_name = structure_id,
                     zip_file = mesh_store,
                     material = material)
 }
 
+#' Retrieve a set of CCF 2017 colors
+#'
+#' Must provide either acronym(s) or a structure_id(s).
+#'
+#' @param acronym The structure acronym(s) to retrieve. Default is NULL.
+#' @param structure_id The structure_id(s) to retrieve. Defualt is NULL.
+#'
+#' @return a vector of color hex values prefixed with "#".
+#' @export
+#'
+#' @examples
+#' BLA_mesh <- ccf_2017_color(acronym = "BLA")
+ccf_2017_color <- function(acronym = NULL,
+                          structure_id = NULL) {
 
+  if(is.null(acronym) & is.null(structure_id)) {
+    stop("Must provide either an acronym or a structure_id to retrieve a color.")
+  } else if(!is.null(acronym)) {
+    structure_id <- mba_structure_id(acronym)
+  }
+
+  id_table <- read.csv(system.file("extdata", "mba_structure_id_to_acronym.csv",
+                                   package = "cocoframer"),
+                       stringsAsFactors = FALSE)
+
+  id_table$color[match(structure_id, id_table$id)]
+}
