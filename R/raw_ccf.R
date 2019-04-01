@@ -4,6 +4,8 @@
 #'
 #' No parameters
 #'
+#' @export
+#'
 #' @return a 3-dimensional array with 25 micron resolution. Dimension are:
 #' \itemize{
 #'   \item x, 528: anterior/posterior
@@ -31,6 +33,8 @@ get_ccf_annotation <- function() {
 #' This annotation is at 200 um resolution, and is used for gene expression atlas data.
 #'
 #' No parameters
+#'
+#' @export
 #'
 #' @return a 3-dimensional array with 200 micron resolution. Dimension are:
 #' \itemize{

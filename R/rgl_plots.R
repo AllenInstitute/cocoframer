@@ -3,6 +3,8 @@
 #' @param ccf_arr a CCF annotation array
 #' @param structure_id The ID number of the desired CCF structure
 #'
+#' @export
+#'
 #' @return An rgl points3d plot
 plot_ccf_structure_points <- function(ccf_arr,
                                       structure_id) {
