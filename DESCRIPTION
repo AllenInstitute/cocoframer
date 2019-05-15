@@ -16,5 +16,5 @@ Imports:
   purrr, 
   rbokeh, 
   reshape2, 
-  rgl, 
-  stringr
+  rgl
+  

@@ -227,7 +227,7 @@ compute_hierarchical <- function(df,
   df[[result_column]] <- 0
 
   # Get the depth by counting the semicolons in taxons
-  df$depth <- stringr::str_count(df[[taxon_column]], ";")
+  df$depth <- sapply(gregexpr(";",df[[taxon_column]]), function(x) sum(x != -1))
   # Sort by deepest first
   df <- df %>%
     dplyr::mutate(original_order = 1:n()) %>%
