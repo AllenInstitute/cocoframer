@@ -1,7 +1,7 @@
 Package: cocoframer
 Type: Package
 Title: COmmon COordinate FRAMEwork in R
-Version: 0.1.0
+Version: 0.1.1
 Author: Lucas Graybuck <lucasg@alleninstitute.org>
 Maintainer: Lucas Graybuck <lucasg@alleninstitute.org>
 Description: Functions for working with the Allen Institute Common Coordinate Framework in R

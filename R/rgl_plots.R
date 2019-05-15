@@ -58,8 +58,8 @@ plot_ccf_meshes <- function(mesh_list,
       if(is.null(bg_color)) {
         meshes[[bg_structure[i]]]$material$alpha <- bg_alphas[i]
       } else {
-        meshes[[bg_structure[i]]]$material <- list(color = bg_colors[i],
-                                                   alpha = bg_alphas[i])
+        meshes[[bg_structure[i]]]$material$color <- bg_colors[i]
+        meshes[[bg_structure[i]]]$material$alpha <- bg_alphas[i]
       }
 
     }
@@ -76,8 +76,8 @@ plot_ccf_meshes <- function(mesh_list,
     if(is.null(fg_color)) {
       meshes[[fg_structure[i]]]$material$alpha <- fg_alphas[i]
     } else {
-      meshes[[fg_structure[i]]]$material <- list(color = fg_colors[i],
-                                                 alpha = fg_alphas[i])
+      meshes[[fg_structure[i]]]$material$color <- fg_colors[i]
+      meshes[[fg_structure[i]]]$material$color <- fg_alphas[i]
     }
 
   }
