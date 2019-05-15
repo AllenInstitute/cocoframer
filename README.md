@@ -80,6 +80,7 @@ plot_ccf_meshes(mesh_list,
                 fg_structure = "CA",
                 bg_structure = "root")
 ```
+![](man/figures/readme_ca.png?raw=true)
 
 You can change the color and opacity of structures with additional parameters:
 
@@ -92,6 +93,7 @@ plot_ccf_meshes(mesh_list,
                 bg_color = "yellow",
                 bg_alpha = 0.4)
 ```
+![](man/figures/readme_ca_colors.png?raw=true)
 
 It's straightforward to plot multiple structures, each with their own color:
 ```
@@ -109,6 +111,7 @@ plot_ccf_meshes(mesh_list,
                 bg_structure = "root")
 
 ```
+![](man/figures/readme_mo_th_p.png?raw=true)
 
 Of course, root doesn't have to be the background structure. Suppose you wanted to see how structures within the thalamus were positioned relative to each other:
 ```
@@ -123,6 +126,42 @@ plot_ccf_meshes(th_meshes,
                 bg_structure = c("TH"))
 
 ```
+![](man/figures/readme_within_th.png?raw=true)
+
+Cocoframer also provides a few built-in RGL material styles. The default is "shiny":
+```
+structures <- c("root","MO","SS")
+mesh_list <- map(structures, ccf_2017_mesh)
+names(mesh_list) <- structures
+
+plot_ccf_meshes(mesh_list,
+                fg_structure = c("MO","SS"),
+                bg_structure = "root",
+                style = "shiny")
+```
+![](man/figures/readme_shiny.png?raw=true)
+
+
+This can be changed to "matte":
+```
+plot_ccf_meshes(mesh_list,
+                fg_structure = c("MO","SS"),
+                bg_structure = "root",
+                style = "matte")
+```
+![](man/figures/readme_matte.png?raw=true)
+
+
+Or "cartoon":
+```
+plot_ccf_meshes(mesh_list,
+                fg_structure = c("MO","SS"),
+                bg_structure = "root",
+                style = "cartoon")
+```
+![](man/figures/readme_cartoon.png?raw=true)
+
+
 **Saving 3D plot snapshots as images**  
 
 Exporting an image for use in a figure is handled by the rgl package:
@@ -204,7 +243,6 @@ names(mesh_list) <- structures
 
 plot_ccf_meshes(mesh_list,
                 fg_structure = c("MOs","TH","P"),
-                fg_color = c("orangered","skyblue","purple"),
                 bg_structure = "root")
 
 anim <- spin3d(axis=c(0,1,0), # Spin on the y-axis
@@ -217,6 +255,7 @@ movie3d(anim,
         dir = "./", # Output directory - will make a lot of temporary files.
         type = "gif")
 ```
+![](man/figures/rotate_demo.gif?raw=true)
 
 ### Common acronyms
 

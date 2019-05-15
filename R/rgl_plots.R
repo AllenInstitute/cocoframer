@@ -32,6 +32,7 @@ plot_ccf_structure_points <- function(ccf_arr,
 #' @param bg_structure The name(s) of the structure to plot as a background (semitransparent) object.
 #' @param bg_color The color to use for the background object (default is NULL, which retains mesh material).
 #' @param bg_alpha The alpha/opacity of the background object (default is 0.2)
+#' @param style The overall style of the structures. Can be "shiny","matte", "cartoon", or "none". "none" will not modify the existing rgl.material settings for the meshes.
 #'
 #' @return a 3D plot in an RGL window.
 #'
@@ -42,7 +43,12 @@ plot_ccf_meshes <- function(mesh_list,
                             fg_alpha = 1,
                             bg_structure = NULL,
                             bg_color = NULL,
-                            bg_alpha = 0.2) {
+                            bg_alpha = 0.2,
+                            style = "shiny") {
+
+  style <- match.arg(style,
+                     choices = c("shiny","matte","cartoon","none"))
+
 
   if(is.null(bg_structure)) {
     meshes <- mesh_list[fg_structure]
@@ -66,7 +72,6 @@ plot_ccf_meshes <- function(mesh_list,
 
   }
 
-
   if(!is.null(fg_color)) {
     fg_colors <- rep(fg_color, length.out = length(fg_structure))
   }
@@ -77,9 +82,24 @@ plot_ccf_meshes <- function(mesh_list,
       meshes[[fg_structure[i]]]$material$alpha <- fg_alphas[i]
     } else {
       meshes[[fg_structure[i]]]$material$color <- fg_colors[i]
-      meshes[[fg_structure[i]]]$material$color <- fg_alphas[i]
+      meshes[[fg_structure[i]]]$material$alpha <- fg_alphas[i]
     }
 
+  }
+
+  if(style == "shiny") {
+    for(i in seq_along(meshes)) {
+      meshes[[i]]$material$specular <- "white"
+      meshes[[i]]$material$shininess <- 50
+    }
+  } else if(style == "matte") {
+    for(i in seq_along(meshes)) {
+      meshes[[i]]$material$specular <- "black"
+    }
+  } else if(style == "cartoon") {
+    for(i in seq_along(meshes)) {
+      meshes[[i]]$material$lit <- FALSE
+    }
   }
 
   rgl::view3d(theta = -45, phi = 35, zoom = 0.7)

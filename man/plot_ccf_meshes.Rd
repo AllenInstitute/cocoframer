@@ -5,7 +5,8 @@
 \title{Plot 3D structures from the CCF}
 \usage{
 plot_ccf_meshes(mesh_list, fg_structure, fg_color = NULL, fg_alpha = 1,
-  bg_structure = NULL, bg_color = NULL, bg_alpha = 0.2)
+  bg_structure = NULL, bg_color = NULL, bg_alpha = 0.2,
+  style = "shiny")
 }
 \arguments{
 \item{mesh_list}{a named list of one or more 3D mesh objects}
@@ -21,6 +22,8 @@ plot_ccf_meshes(mesh_list, fg_structure, fg_color = NULL, fg_alpha = 1,
 \item{bg_color}{The color to use for the background object (default is NULL, which retains mesh material).}
 
 \item{bg_alpha}{The alpha/opacity of the background object (default is 0.2)}
+
+\item{style}{The overall style of the structures. Can be "shiny","matte", "cartoon", or "none". "none" will not modify the existing rgl.material settings for the meshes.}
 }
 \value{
 a 3D plot in an RGL window.
