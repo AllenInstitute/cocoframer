@@ -10,8 +10,8 @@ get_aba_panel_ids <- function() {
   read.csv(url(get_ids))$id
 }
 
-get_atlas_svg <- function(ids,
-                    downsample) {
+get_aba_svg <- function(ids,
+                        downsample) {
   downsample <- as.character(downsample)
 
   id_urls <- paste0("http://api.brain-map.org/api/v2/svg/",
@@ -25,17 +25,17 @@ get_atlas_svg <- function(ids,
   return(svg_lines)
 }
 
-get_atlas_svgs <- function(ids = NULL,
-                           out_dir,
-                           downsample = 4,
-                           remove_colors = FALSE) {
+save_aba_svgs <- function(ids = NULL,
+                          out_dir,
+                          downsample = 4,
+                          remove_colors = FALSE) {
 
   if(is.null(ids)) {
     ids <- get_aba_panel_ids()
   }
 
   for(i in 1:length(ids)) {
-    svg_lines <- get_atlas_svg(ids[i])
+    svg_lines <- get_aba_svg(ids[i])
 
     if(remove_colors) {
       svg_lines <- gsub("fill:#.{6}","fill:#ffffff",svg_lines)
@@ -52,7 +52,7 @@ svg_to_tags <- function(x) {
   unlist(strsplit(x, "><"))
 }
 
-svg_tags_to_list <- function(x) {
+aba_svg_tags_to_list <- function(x) {
   split_on_space <- unlist(strsplit(x,"\" "))
   no_quotes <- gsub("\"","",split_on_space)
   no_brackets <- sub("<g |path ","",no_quotes)
@@ -71,7 +71,7 @@ svg_tags_to_list <- function(x) {
   out_list
 }
 
-svg_list_to_coords <- function(x) {
+aba_svg_list_to_coords <- function(x) {
   if("d" %in% names(x)) {
     d <- sub("M ","",x$d)
     p <- unlist(strsplit(d, " L "))
@@ -93,7 +93,7 @@ svg_list_to_coords <- function(x) {
   }
 }
 
-svg_list_to_attr <- function(x) {
+aba_svg_list_to_attr <- function(x) {
   keep <- names(x) != "d"
   out_list <- x[keep]
   if("style" %in% names(out_list)) {
@@ -108,7 +108,7 @@ svg_list_to_attr <- function(x) {
   out_list
 }
 
-svg_coords_to_segs <- function(df) {
+aba_svg_coords_to_segs <- function(df) {
   if(!is.null(df)) {
 
     points <- df
@@ -130,9 +130,9 @@ svg_coords_to_segs <- function(df) {
   }
 }
 
-plot_svg_coords <- function(svg_coords,
-                            svg_attr,
-                            min_pts = 20) {
+plot_aba_svg_coords <- function(svg_coords,
+                                svg_attr,
+                                min_pts = 20) {
   # remove nulls
   keep_coords <- !map_lgl(svg_coords, is.null)
   svg_coords <- svg_coords[keep_coords]
