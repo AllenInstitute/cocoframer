@@ -22,6 +22,19 @@ http://help.brain-map.org/download/attachments/2818171/Mouse_Common_Coordinate_F
 An interactive, in-browser 3D structure viewer, the Allen Brain Explorer, is available here:  
 http://connectivity.brain-map.org/3d-viewer?v=1
 
+### Similar Tools
+
+These tools also utilize the Allen Brain Atlas CCF to generate 3D rendering of mouse brains. They are not made by the Allen Institute for Brain Science, but provide additional funcitonality beyond what is currently available from `cocoframer`:
+
+**In R:**  
+The `mouselightr` package generates 3D CCF mouse brain plots, along with MouseLight neuron reconstructions:  
+https://github.com/jefferis/nat.mouselight  
+It 
+
+**In Python:**  
+`BrainRender` generates 3D CCF mouse brain plots, along with both Allen Connectivity Atlas and MouseLight neuron reconstructions:  
+https://github.com/BrancoLab/BrainRender
+
 ### Installation
 
 cocoframer can be installed with:
